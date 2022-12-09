@@ -1,5 +1,6 @@
 import { Link, Outlet, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { getMovieById } from '../../Services/services';
 
 export function MovieDetails() {
   const { movieId } = useParams();
@@ -11,51 +12,39 @@ export function MovieDetails() {
   ];
 
   useEffect(() => {
-    fetch(
-      ` https://api.themoviedb.org/3/movie/${movieId}?api_key=cc9feb50eaf7ec71b368044a87f5f06b`
-    )
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject(new Error(`we cant find any photo by `));
-      })
-      .then(data => {
-
-        setMovie([data]);
-      })
+    getMovieById(movieId)
+      .then(response => setMovie([response]))
       .catch(error => console.log(error));
   }, [movieId]);
 
   return (
     <div>
-      MovieDetails
       {movie &&
-        movie.map(movie => {
+        movie.map(({id, title, poster_path, release_date, vote_average,overview,genres}) => {
           return (
-            <div key={movie.id}>
+            <div key={id}>
               <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={`${movie.title}`}
+                src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+                alt={`${title}`}
                 width="300"
               />
               <h2>
-                {movie.title}
-                {movie.release_date}
+                {title}
+                {release_date}
               </h2>
-              <p>User score: {movie.vote_average}</p>
+              <p>User score: {vote_average}</p>
               <h3>Overviev</h3>
-              <p>{movie.overview}</p>
+              <p>{overview}</p>
               <h4>Ganres</h4>
               <p>
-                {movie.genres.map(el => {
+                {genres.map(el => {
                   return el.name;
                 })}
               </p>
             </div>
           );
         })}
-        <p>Aditional information</p>
+      <p>Aditional information</p>
       <ul>
         {navItem.map(({ href, text }) => {
           return (

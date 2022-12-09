@@ -1,42 +1,47 @@
 import { Link, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getMovieByName } from '../../Services/services'
- 
+import { getMovieByName } from '../../Services/services';
+import { useSearchParams } from "react-router-dom";
+
 export function Movies() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState('');
-  const [query, setQuery] = useState('');
+  const [params, setParams] = useState('');
   const [searchedMovie, setSearchedMovie] = useState([]);
+  const filmName = searchParams.get("query") ?? "";
+  
 
+  const updateQueryString = (query) => {
+    const nextParams = query !== "" ? { query } : {};
+    setSearchParams(nextParams);
+  };
+
+
+  if(filmName.length>2 && params.length<1){
+    setParams(filmName)
+    setInputValue(filmName)
+  }
   useEffect(() => {
-    if(query.length>2){
-      getMovieByName(query).then(response=>{setSearchedMovie(response.results)}).catch(error => console.log(error));
+    if (params.length > 2) {
+      getMovieByName(params)
+        .then(response => {
+          setSearchedMovie(response.results);
+        })
+        .catch(error => console.log(error));
     }
-    // console.log(query);
-    // if(query.length>2){
-    // fetch(
-    //   ` https://api.themoviedb.org/3/search/movie?api_key=cc9feb50eaf7ec71b368044a87f5f06b&language=en-US&query=${query}&page=1&include_adult=false`
-    // )
-    //   .then(response => {
-    //     if (response.ok) {
-    //       return response.json();
-    //     }
-    //     return Promise.reject(new Error(`we cant find any photo by `));
-    //   })
-    //   .then(data => {
-    //     setSearchedMovie(data.results);
-    //   })
-    //   .catch(error => console.log(error));
-    // }
-  }, [query]);
+  }, [params]);
 
 
-  const handlerForm = (e) => {
+
+  const handlerForm = e => {
     e.preventDefault();
-
-    setQuery(inputValue.trim().toLowerCase());
+    
+    // setSearchParams({ name: inputValue })
+    setParams(inputValue.trim().toLowerCase());
   };
   const handlerInput = event => {
     setInputValue(event.target.value);
+    updateQueryString(event.target.value)
   };
 
   return (
@@ -48,16 +53,16 @@ export function Movies() {
       {searchedMovie.length > 0 &&
         (searchedMovie.length > 1 ? (
           <ul style={{ display: 'flex', flexWrap: 'wrap', gap: '30px' }}>
-            {searchedMovie.map(el => {
+            {searchedMovie.map(({id, original_title, poster_path, title}) => {
               return (
-                <Link to={`${el.id}`} key={el.id}>
+                <Link to={`${id}`} key={id}>
                   <div>
                     <img
-                      src={`https://image.tmdb.org/t/p/w500${el.poster_path}`}
-                      alt={`${el.title}`}
+                      src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+                      alt={`${title}`}
                       width="300"
                     />
-                    <h2> {el.original_title}</h2>
+                    <h2> {original_title}</h2>
                   </div>
                 </Link>
               );
@@ -79,99 +84,30 @@ export function Movies() {
   );
 }
 
-// // import { Loader } from 'components/Loader/Loader';
-// // import MovieCard from 'components/MovieCard/MovieCard';
-// // import { NotFound } from 'components/NotFound/NotFound';
-// // import { Searchbar } from 'components/Searchbar/Searchbar';
-//  import { useFetch } from 'hooks/useFetch';
-// import { useCallback, useRef } from 'react';
-// import { useEffect, useState } from 'react';
-// import { useSearchParams } from 'react-router-dom';
-// import { getMovieByQuery } from 'services/api';
-// import { Gallery, Container } from './Movies.styled';
 
-// const Movies = () => {
-//   const [movies, setMovies] = useState([]);
-//   // const [totalPages, setTotalPages] = useState(1);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState('');
-//   const [searchParams] = useSearchParams();
-//   const query = searchParams.get('query') ?? '';
-//   const page = searchParams.get('page') ?? 1;
-//   const galleryRef = useRef();
+// import { useSearchParams } from "react-router-dom";
+// import { ProductList } from "../components/ProductList";
+// import { SearchBox } from "../components/SearchBox";
+// import { getProducts } from "../fakeAPI";
 
-//   console.log(getMovies)
+// export const Products = () => {
+//   const products = getProducts();
+//   const [searchParams, setSearchParams] = useSearchParams();
+//   const productName = searchParams.get("name") ?? "";
 
-//   const getMovies = useCallback(params => {
-//     getMovieByQuery(params)
-//       .then(resMovies => {
-//         if (resMovies.results.length === 0) {
-//           setError('Nothing found');
-//         }
-//         if (resMovies.page !== 1) {
-//           setMovies(prev => [...prev, ...resMovies.results]);
-//         } else {
-//           setMovies(resMovies.results);
-//           // setTotalPages(resMovies.total_pages);
-//         }
-//       })
-//       .catch(error => setError(error.message))
-//       .finally(setLoading(false));
-//   }, []);
+//   const visibleProducts = products.filter((product) =>
+//     product.name.toLowerCase().includes(productName.toLowerCase())
+//   );
 
-//   const [fetchData, isLoading, isError] = useFetch(getMovies);
-
-//   useEffect(() => {
-//     if (movies.length > 0) {
-//       if (galleryRef.current) {
-//         window.scrollTo({
-//           top: galleryRef.current.getBoundingClientRect().height + 100,
-//           left: 100,
-//           behavior: 'smooth',
-//         });
-//       }
-//     }
-//   }, [movies]);
-
-//   useEffect(() => {
-//     if (query !== '') {
-//       setLoading(true);
-//       fetchData({ query, page });
-//     } else {
-//       setMovies([]);
-//       setError('');
-//       // setTotalPages(1);
-//     }
-//   }, [fetchData, query, page]);
-
-// //   if (isLoading || loading) {
-// //     return <Loader />;
-// //   }
-// //   if (isError) {
-// //     return <NotFound text="An error occturred, please try again" />;
-// //   }
-
-//   // const onLoadMore = () => {
-//   //   setSearchParams({ page: +page + 1, query });
-//   // };
-
-//   // const isShowBtn = page < totalPages;
+//   const updateQueryString = (name) => {
+//     const nextParams = name !== "" ? { name } : {};
+//     setSearchParams(nextParams);
+//   };
 
 //   return (
-//     <Container>
-//       <Searchbar />
-//       {movies?.length === 0 && error ? (
-//         <NotFound text="Nothing found" />
-//       ) : (
-//         <>
-//           <Gallery ref={galleryRef}>
-//             {movies?.map(({ title, id, poster_path }) => (
-//               <MovieCard key={id} title={title} id={id} url={poster_path} />
-//             ))}
-//           </Gallery>
-//           {/* {isShowBtn && <Button onClickHandle={onLoadMore}>Load More</Button>} */}
-//         </>
-//       )}
-//     </Container>
+//     <main>
+//       <SearchBox value={productName} onChange={updateQueryString} />
+//       <ProductList products={visibleProducts} />
+//     </main>
 //   );
 // };
