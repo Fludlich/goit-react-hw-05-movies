@@ -2,6 +2,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getMovieByName } from '../../Services/services';
 import { useSearchParams } from "react-router-dom";
+import imgDefault from '../../defaultImg/imgDefault.png'
 
 export function Movies() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -9,7 +10,7 @@ export function Movies() {
   const [params, setParams] = useState('');
   const [searchedMovie, setSearchedMovie] = useState([]);
   const filmName = searchParams.get("query") ?? "";
-  
+
 
   const updateQueryString = (query) => {
     const nextParams = query !== "" ? { query } : {};
@@ -58,7 +59,7 @@ export function Movies() {
                 <Link to={`${id}`} key={id}>
                   <div>
                     <img
-                      src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+                      src={poster_path? `https://image.tmdb.org/t/p/w500${poster_path}` : imgDefault}
                       alt={`${title}`}
                       width="300"
                     />
@@ -71,7 +72,7 @@ export function Movies() {
         ) : (
           <Link to={`${searchedMovie[0].id}`}>
             <img
-              src={`https://image.tmdb.org/t/p/w500${searchedMovie[0].poster_path}`}
+              src={searchedMovie[0].poster_path? `https://image.tmdb.org/t/p/w500${searchedMovie[0].poster_path}` : imgDefault}
               alt={`${searchedMovie[0].title}`}
               width="300"
             />
@@ -85,29 +86,3 @@ export function Movies() {
 }
 
 
-// import { useSearchParams } from "react-router-dom";
-// import { ProductList } from "../components/ProductList";
-// import { SearchBox } from "../components/SearchBox";
-// import { getProducts } from "../fakeAPI";
-
-// export const Products = () => {
-//   const products = getProducts();
-//   const [searchParams, setSearchParams] = useSearchParams();
-//   const productName = searchParams.get("name") ?? "";
-
-//   const visibleProducts = products.filter((product) =>
-//     product.name.toLowerCase().includes(productName.toLowerCase())
-//   );
-
-//   const updateQueryString = (name) => {
-//     const nextParams = name !== "" ? { name } : {};
-//     setSearchParams(nextParams);
-//   };
-
-//   return (
-//     <main>
-//       <SearchBox value={productName} onChange={updateQueryString} />
-//       <ProductList products={visibleProducts} />
-//     </main>
-//   );
-// };

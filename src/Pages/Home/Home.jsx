@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getPopularMovies } from '../../Services/services'
+import imgDefault from '../../defaultImg/imgDefault.png'
 
 export function Home() {
   const [movie, setMovie] = useState([]);
@@ -19,7 +20,7 @@ export function Home() {
               <Link to={`movies/${id}`} key={original_title}>
                 <div>
                   <img
-                    src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+                    src={poster_path? `https://image.tmdb.org/t/p/w500${poster_path}` : imgDefault}
                     alt={`${title}`}
                     width="300"
                   />
@@ -29,7 +30,7 @@ export function Home() {
             );
           })
         ) : (
-          <p>We can't find any film, try to reload page</p>
+          <p>We can't find any film, pls try to reload page</p>
         )}
       </ul>
     </div>

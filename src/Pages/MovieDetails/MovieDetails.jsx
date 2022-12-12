@@ -1,6 +1,7 @@
 import { Link, Outlet, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getMovieById } from '../../Services/services';
+import imgDefault from '../../defaultImg/imgDefault.png'
 
 export function MovieDetails() {
   const { movieId } = useParams();
@@ -24,7 +25,7 @@ export function MovieDetails() {
           return (
             <div key={id}>
               <img
-                src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+                src={poster_path? `https://image.tmdb.org/t/p/w500${poster_path}` : imgDefault }
                 alt={`${title}`}
                 width="300"
               />

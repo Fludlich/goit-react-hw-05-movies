@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getCast } from 'Services/services';
+import imgDefault from '../../defaultImg/imgDefault.png'
 
 export function Cast() {
   const { movieId } = useParams();
@@ -20,7 +21,7 @@ export function Cast() {
           return (
             <li key={cast_id}>
               <img
-                src={`https://image.tmdb.org/t/p/w500${profile_path}`}
+                src={profile_path? `https://image.tmdb.org/t/p/w500${profile_path}` : imgDefault}
                 alt={`${original_name}`}
                 width="300"
               />
